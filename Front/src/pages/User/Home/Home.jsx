@@ -7,7 +7,13 @@ function Home() {
     let [products, setProducts] = useState([])
     const audioRef = useRef(null);
     const [isPlaying, setIsPlaying] = useState(false);
-    let {favorites ,setFavorites}=useContext(favoriteContext)
+    const [searchTerm, setSearchTerm] = useState('')
+    let { favorites, setFavorites } = useContext(favoriteContext)
+    const filteredProducts = products.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.desc.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     function getData() {
 
         axios.get("http://localhost:3000/products5")
@@ -17,11 +23,11 @@ function Home() {
 
     }
     function HandleAddFav() {
-        let findFavorite = favorites.find(favorite=>favorite.id ==products.id)
-        if(findFavorite){
+        let findFavorite = favorites.find(favorite => favorite.id == products.id)
+        if (findFavorite) {
             alert("artiq movcuddur")
-        }else{
-            setFavorites([...favorites,products])
+        } else {
+            setFavorites([...favorites, products])
         }
     }
 
@@ -296,11 +302,13 @@ function Home() {
             </section>
             <section id='gusets'>
                 <div className="guests">
+                    <input type="text" className='search-input' value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)} />
                     <h2>Featured Gusets</h2>
                     <div className="guests-wrapper">
                         {
-                            products.length > 0 ? (
-                                products.map((req) => (
+                            filteredProducts.length > 0 ? (
+                                filteredProducts.map((req) => (
                                     <div className="guest-card" key={req.id}>
                                         <button><i onClick={() => HandleDelete(req.id)} class="bi bi-x-lg delete"></i></button>
                                         <div className="guest-img">
@@ -308,7 +316,7 @@ function Home() {
                                         </div>
                                         <h3>{req.name}</h3>
                                         <p>{req.desc}</p>
-                                        <i onClick={()=>HandleAddFav(req)} class="bi bi-heart"></i>
+                                        <i onClick={() => HandleAddFav(req)} class="bi bi-heart"></i>
 
                                     </div>
                                 ))
